@@ -69,6 +69,11 @@ mix do deps.get, compile
 по аналогии с уже имеющимся в `app.html.eex` получаем сообщение в консоль браузера об 404 ошибке при обращении к `materialize.min.css`.
 В консоль сервер выдает ошибку ` ** (Phoenix.Router.NoRouteError) no route found for GET /vendor/material....`.
 
-Возможное решение https://stackoverflow.com/a/41210643
-
+Решение "в меру непонимания проблемы" в файле `\discuss\lib\discuss\endpoint.ex`: добавил `vendor` в код:
+```
+plug Plug.Static,
+	at: "/", from: :discuss, gzip: false,
+	only: ~w(css fonts images js vendor favicon.ico robots.txt)
+```
+CSS из папки vendor начали раздаваться...
 
