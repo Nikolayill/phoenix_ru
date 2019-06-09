@@ -1,3 +1,4 @@
+#052-055
 Что бы создать новый проект, выполнил:
 `mix phoenix.new discuss`
 При попытке выполнить:
@@ -18,14 +19,14 @@ https://stackoverflow.com/a/53057831
 в топике
 https://stackoverflow.com/questions/53045717/adapter-ecto-adapters-postgres-was-not-compiled
 
-В `mix.exs` были проапгрейжены зависимости:
+В `\discuss\mix.exs` были проапгрейжены зависимости:
 ```
 	 {:ecto_sql, "~> 3.0"},
      {:phoenix_ecto, "~> 4.0"},
      {:postgrex, ">= 0.0.0"},
 ```
 
-В `repo.ex` был добавлен параметр `adapter`:
+В `\discuss\lib\discuss\repo.ex` был добавлен параметр `adapter`:
 ```
 defmodule Discuss.Repo do
   use Ecto.Repo, 
@@ -46,3 +47,9 @@ mix do deps.get, compile
 
 Запустил сервер командой `mix phoenix.server`. 
 По адресу `http://localhost:4000` стала доступна чистая страничка.
+
+Изменил html в шаблоне `\discuss\web\templates\page\index.html.eex`.
+Изменения отобразились в браузере.
+
+#056
+
