@@ -51,5 +51,24 @@ mix do deps.get, compile
 Изменил html в шаблоне `\discuss\web\templates\page\index.html.eex`.
 Изменения отобразились в браузере.
 
-#056
+#056-057
+Феникс поддерживает как приложения с рендернигом страниц на сервере, так и одностраничные.
+В данном примере рассматривается рендеринг на сервере.
+
+Папка `\discuss\web\templates\layout\` содержит макеты "layouts" для страниц,
+шаблоны которых, располагаются в `\discuss\web\templates\page\`.
+Файлы макетов/шаблонов имеют расширение `eex`.
+
+Макет страниц приложения - `app.html.eex` в него имеет смысл добавлять элементы 
+относящиеся к сквозной функциональности, например меню и подключение CSS стилей.
+
+Для приложения должны использоваться стили "https://materializecss.com/".
+В уроке прелоагается использовать CDN (но это не очень инстересно).
+При попутке скачать стили и положить в `\discuss\web\static\vendor`, и 
+затем добавить код `<link rel="stylesheet" href="<%= static_path(@conn, "/vendor/materialize/css/materialize.min.css") %>">` 
+по аналогии с уже имеющимся в `app.html.eex` получаем сообщение в консоль браузера об 404 ошибке при обращении к `materialize.min.css`.
+В консоль сервер выдает ошибку ` ** (Phoenix.Router.NoRouteError) no route found for GET /vendor/material....`.
+
+Возможное решение https://stackoverflow.com/a/41210643
+
 
