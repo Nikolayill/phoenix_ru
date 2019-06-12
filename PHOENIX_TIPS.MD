@@ -139,3 +139,25 @@ CSS из папки vendor начали раздаваться...
 Т.е. на сервер будет отправлен GET запрос по указанному URL. Что бы запрос был обработан
 нужно добавить его в роутер `get "/topics/new", TopicController, :new`, 
 так же нужно создать контроллер `TopicController`.
+
+#065
+##TopicController
+По соглашению название модуля контроллера соответствует сущности в ед.числе, 
+которую он обслуживает. Т.е. `topics` - `TopicController`.
+В контроллере должна быть функция-обработчик `new` указанная в роутере (на пред. шаге).
+Т.о. модуль будет выглядеть так:
+```
+defmodule Discuss.TopicController do
+  def new() do
+
+  end
+end
+```
+Теперь, если запустить феникс, он не выдаст ошибки при старте.
+Но при попытке открыть указанную страницу произойдет исключение:
+```
+Request: GET /topics/new
+** (exit) an exception was raised:
+    ** (UndefinedFunctionError) function Discuss.TopicController.init/1 is undefined or private    
+```
+
