@@ -161,3 +161,54 @@ Request: GET /topics/new
     ** (UndefinedFunctionError) function Discuss.TopicController.init/1 is undefined or private    
 ```
 
+#066
+##import-alias-use
+Феникс ожидает от контроллера некоторого определенного поведения. 
+В элексире нет наследования как в ОО-языках, но есть ряд собственных решений
+для переиспользования кода.
+`import` - дает доступ из модуля к функциям другово модуля.\
+`alias` - создает шорткат к другому модулю.\
+`use` - позволяет "гибко" (?) связать модули.\
+
+Например:
+существует модуль `Math`
+```
+defmodule Math do
+  def add(a,b), do: a+b
+end
+```
+что бы в модуле `TopicController` использовать функцию `add`,
+можно обратиться к ней через полное имя модуля:
+```
+defmodule TopicController do
+  def new() do
+	Math.add(1,2)
+  end
+end
+```
+ 
+если в модуле `TopicController` написать `import Math`, 
+функция `add` станет доступна извне как `TopicController.add`:
+```
+defmodule TopicController do
+  import Math
+  
+  def new() do
+	add(1,2)
+  end
+end
+```
+
+если в модуле `TopicController` написать `alias Math`, 
+функция `add` будет доступна только в самом `TopicController`:
+```
+defmodule TopicController do
+  alias Math
+  
+  def new() do
+	add(1,2)
+  end
+end
+```
+
+
