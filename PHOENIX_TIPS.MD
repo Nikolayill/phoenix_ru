@@ -262,6 +262,42 @@ end
 PS: здесь используется метапрограммирование - блок `quote` (см. https://elixirschool.com/ru/lessons/advanced/metaprogramming/#quote).
 По сути `use` встраивает блок содержащийся в `quote` в код модуля.
 
+#068
+## Параметры функции контроллера
+Теперь при попытке запустить сервер возникает другая ошибка:
+```
+Request: GET /topics/new
+** (exit) an exception was raised:
+    ** (UndefinedFunctionError) function Discuss.TopicController.new/2 is undefined or private. Did you mean one of:
+
+      * new/0
+```
+Строка `function Discuss.TopicController.new/2 is undefined or private.` указывает что в контроллере недоступна функция
+`new` с ожидаемым количеством параметров (2).
+В эликсире количество параметров указывается следом за именем функции, между именем и числом ставится слэш.
+
+Можно добавить параметры по аналогии с `web/controllers/page_controller.ex` и попытаться вывести их значения на экран.
+#### IO.puts, IO.inspect
+ Функция `IO.puts` выводит строку на экран\
+ Функция `IO.inspect` выводит значение структуры данных и её вложенных частей.\
+ С помощью этих функций можно увидеть, что за значения передаются в контроллер. 
+ 
+Текст ошибки при обращении к странице, снова поменяется:
+```
+Request: GET /topics/new
+** (exit) an exception was raised:
+    ** (RuntimeError) expected action/2 to return a Plug.Conn, all plugs must receive a connection (conn) and return a connection
+```
+И в консоли появятся значения параметров:\
+`conn` содержит структуру `%Plug.Conn{ *** }` заполненную параметрами и заголовками HTTP запроса 
+и некоторыми дополнительными значениями.\
+`params` в данном случае будет пустой ассоциативный массив `%{}`, но если посторить запрос добавив параметр:
+`http://localhost:4000/topics/new?test=1` то в массиве будет `%{"test" => "1"}`.
+
+##Plug.Conn
+`Plug.Conn` содержит входящий HTTP запрос, и в такой же структуре должен содержаться ответ. 
+Эта структура используется на всех этапах обработки запроса в фениксе.  
+ 
 
 
 
