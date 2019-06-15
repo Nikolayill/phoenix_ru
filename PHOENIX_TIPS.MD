@@ -211,4 +211,58 @@ defmodule TopicController do
 end
 ```
 
+#067
+##use
+Для "наследования" общего поведения контроллера используется выражение 
+`use Discuss.Web, :controller` (см. `web/controllers/page_controller.ex` стр.2).
+`use` позволяет гибко настраивать импорты. 
+В данном примере в выражении содержится ссылка на функцию `controller` 
+в модуле `Discuss.Web`.
+
+Модуль `Discuss.Web` (см.`web/web.ex`) содержит такой код:
+```
+  def controller do
+    quote do
+      use Phoenix.Controller
+
+      alias Discuss.Repo
+      import Ecto
+      import Ecto.Query
+
+      import Discuss.Router.Helpers
+      import Discuss.Gettext
+    end
+  end
+``` 
+В нём указана целая группа импортов, которые и будут подключены к модулю контроллера
+`use Discuss.Web, :controller`.
+В модуле `Discuss.Web` есть такие функции для всех основных частей приложения
+(model, view, router, controller, channel).
+Если в проекте появится некоторая общая функциональность, то ее можно вынести
+в отдельный модуль и добавить импорт в соответствующую функцию.
+ 
+Например, новая функциональность помещена в модуль `Discuss.CustomHelpers`, тогда
+что бы подключить её к каждому контроллеру нужно модифицировать код так:
+```
+  def controller do
+    quote do
+      use Phoenix.Controller
+
+      alias Discuss.Repo
+      import Ecto
+      import Ecto.Query
+
+      import Discuss.Router.Helpers
+      import Discuss.Gettext
+      import Discuss.CustomHelpers # <-- функции нужные в каждом контроллере 
+    end
+  end
+```
+
+PS: здесь используется метапрограммирование - блок `quote` (см. https://elixirschool.com/ru/lessons/advanced/metaprogramming/#quote).
+По сути `use` встраивает блок содержащийся в `quote` в код модуля.
+
+
+
+
 
