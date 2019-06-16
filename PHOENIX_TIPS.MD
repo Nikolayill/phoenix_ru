@@ -312,9 +312,75 @@ Request: GET /topics/new
 ```
 Схема указывает фениксу, что данные для модели хранятся в таблице `topics` которая имеет текстовое поле `title`.
 
+#071
+##Валидация модели
+####Changeset
+В модуле `Discuss.Topic` можно определить функцию валидации.\
+Для валидации данных модели используется модуль и структура `Ecto.Changeset` (см.https://elixirschool.com/en/lessons/ecto/changesets/)
+Пустая структура имеет вид:
+```
+iex(6)> %Ecto.Changeset{}
+ #Ecto.Changeset<action: nil, changes: %{}, errors: [], data: nil, valid?: false>
+```
+Что бы ее заполнить нужно воспользоваться функцией `Ecto.Changeset.cast/4`:
+```
+iex(8)> Ecto.Changeset.cast(%Discuss.Topic{title: "Test"}, %{"title" => "New title"}, [:title])
+#Ecto.Changeset<
+  action: nil,
+  changes: %{title: "New title"},
+  errors: [],
+  data: #Discuss.Topic<>,
+  valid?: true
+>
+```
+Функция первым параметром принимает исходное значение валидируемой структуры, вторым параметром - измененное значение,
+третьим параметром - набор отслеживаемых полей. Изменение других полей не будет обработано, - если в примере выше, 
+изменить третий параметр на пустой список, то функция верент пустую структуру:
+```
+iex(9)> Ecto.Changeset.cast(%Discuss.Topic{title: "Test"}, %{"title" => "New title"}, [])
+#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: #Discuss.Topic<>,
+ valid?: true>
+```
+####Функции-валидаторы (Ecto.Changeset.validate_required)
+В `Ecto` существует набор предопределенных функций варидации. Для валидации `Discuss.Topic` 
+в модуль нужно добавить функцию формирующую changeset и применяющую к нему валидатор:
+```
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:title])
+    |> validate_required([:title])
+  end
+```
+здесь `validate_required` - один из валидаторов `Ecto` указывающий, что поле `title` обязательно должно быть заполнено.
+Пример:
+```
+iex(14)> Ecto.Changeset.cast(%Discuss.Topic{title: ""}, %{"title" => "New topic"}, [:title]) |> Ecto.Changeset.validate_required([:title])
+#Ecto.Changeset<
+  action: nil,
+  changes: %{title: "New topic"},
+  errors: [],
+  data: #Discuss.Topic<>,
+  valid?: true
+>
+```
+флаг `valid?: true` указывает, что после изменения запись валидна.
+Если поменять второй параметр на `%{"title" => ""}` (поле `title` содержит пустую строку):
+```
+iex(15)> Ecto.Changeset.cast(%Discuss.Topic{title: ""}, %{"title" => ""}, [:title]) |> Ecto.Changeset.validate_required([:title])
+#Ecto.Changeset<
+  action: nil,
+  changes: %{},
+  errors: [title: {"can't be blank", [validation: :required]}],
+  data: #Discuss.Topic<>,
+  valid?: false
+>
+```
+Валидатор выставит флаг `valid?: false` - запись не валидна, а в поле `errors`
+будет указано сообщение и причина.
 
- 
-
-
-
+#####Значение аргумента функции по умолчанию
+В приведенном выше примере функции `changeset` за вторым аргументом 
+`params` следует двойной слэш `\\` и значение `%{}` - пустой асоц.массив:\
+`def changeset(struct, params \\ %{}) do`\
+Так в элексире обозначается значение аргумента по умолчанию. 
 
