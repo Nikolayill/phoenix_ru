@@ -8,4 +8,11 @@ defmodule Discuss.TopicController do
 
     render conn, "new.html", changeset: changeset
   end
+
+  def create(conn, params) do
+    IO.puts("create form data")
+    IO.inspect(params)
+    %{"topic" => topic} = params
+    IO.inspect(topic)
+  end
 end
