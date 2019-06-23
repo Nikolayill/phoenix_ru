@@ -471,7 +471,7 @@ The following topic_path actions are defined under your router:
 Видно, что данные введенные в поле попадают в параметр "topic", значением в котором является ассоциативный массив,
 в котором каждому полю формы соответствует отдельный ключ.
 ####Ассоциативный массив
-[Ассоциативный массив](https://elixirschool.com/ru/lessons/basics/collections/#%D0%B0%D1%81%D1%81%D0%BE%D1%86%D0%B8%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5-%D0%BC%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B) это не упорядоченная коллекция пар ключ-значение, 
+[Ассоциативный массив](https://elixirschool.com/ru/lessons/basics/collections/#%D0%B0%D1%81%D1%81%D0%BE%D1%86%D0%B8%D0%B0%D1%82%D0%B8%D0%B2%D0%BD%D1%8B%D0%B5-%D0%BC%D0%B0%D1%81%D1%81%D0%B8%D0%B2%D1%8B) это неупорядоченная коллекция пар ключ-значение, 
 где ключем может являться любое значение, а не только атом как в ключевых списках.\
 Что бы получить из него данные можно воспользоваться паттер матчингом:
 `%{"topic" => topic} = params`\
@@ -483,6 +483,26 @@ The following topic_path actions are defined under your router:
 здесь `%{"topic" => topic} = params` означает - сопоставить второй аргумент с образцом и поместить
 значение с ключем `"topic"` в переменную `"topic"`, 
 а полное значение второго аргумента поместить в `params`. 
+#077
+####Router.Helpers
+Команда (задача) `mix phoenix.routes` отображает в консоль пути определаенные в проекте.\
+Например, если её выполнить для данного проекта, она должна вывести:
+```
+ page_path  GET   /            Discuss.PageController :index
+topic_path  GET   /topics/new  Discuss.TopicController :new
+topic_path  POST  /topics      Discuss.TopicController :create
+```
+в первой колонке имя [функции хелпера](https://hexdocs.pm/phoenix/routing.html#path-helpers)
+генерируемой для конкретного контроллера, ассоциированного с ним URL и типа HTTP запроса.
+Хелперы служат для абстрагирования от конкретных путей при указании URL. Например в шаблоне:
+`web/templates/topic/new.html.eex` для указания пути отправки из формы: `<%= form_for @changeset, topic_path(@conn, :create), fn f -> %>`.
+Здесь `topic_path(@conn, :create)` вернет `/topics`:
+```
+iex(1)> alias Discuss.Router.Helpers, as: Routes
+Discuss.Router.Helpers
+iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
+"/topics/new"
+```
 
 
 
