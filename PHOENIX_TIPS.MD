@@ -552,7 +552,18 @@ iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
 нужно добавить `:ecto_sql` в список по ключу `applications:`.\
 См. [Telemetry issue upgrading to ecto 3.0 #2793](https://github.com/elixir-ecto/ecto/issues/2793#issuecomment-436413037)
 
-
+#079
+##Обработка ошибки валидации
+В ветке обрабатывающей ошибку валидации нужно добавить отображение формы и текста ошибки:
+```
+  {:error, changeset} ->
+    render conn, "new.html", changeset: changeset
+```
+Что бы пользователь видел ошибку, в шаблон формы нужно добавить специальный тег:
+```
+	<%= error_tag f, :title %>
+```
+он отображает ошибку валидации поля `title`
 
 
 
