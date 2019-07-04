@@ -512,6 +512,33 @@ iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
 	changeset = Topic.changeset(%Topic{}, topic)
 	Repo.insert(changeset)
 ```
+Так же следует добавить проверку результата. `Repo.insert` - функция возвращает кортеж первый элемент
+которого атом `ok:` в случае успешного выполнения и `error:` в случае ошибки.
+```
+    case Repo.insert(changeset) do
+      {:ok, post} -> IO.inspect(post)
+      {:error, changeset} -> IO.inspect(changeset) #обработка ошибки
+    end
+```
+Если теперь запустить сервере `mix phoenix.server`, открыть форму `http://localhost:4000/topics/new`,
+заполнить название и нажать кнопку "Save Topic" - в таблицу будет выполнена вставка. После нажатия кнопки
+будет отображена страница ошибки т.к. код из примера выше не возвращает HTTP ответ - структуру `Plug.Conn`.
+
+В логе будут отображены данные формы:
+```
+[debug] Processing by Discuss.TopicController.create/2
+  Parameters: %{"_csrf_token" => "JTwjUDcVPhI0WmpaFj42ERIxBgEHAAAAdDbaOpQfL/9nyNPdfpjvbA==", "_utf8" => "тЬУ", "topic" => %{"title" => "gfdgd"}}
+```
+затем сформированный SQL запрос и значение структуры:
+```
+%Discuss.Topic{
+  __meta__: #Ecto.Schema.Metadata<:loaded, "topics">,
+  id: 1,
+  title: "JS frameworks"
+}
+```
+
+
 
 
 
