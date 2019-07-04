@@ -19,6 +19,7 @@ defmodule Discuss.Mixfile do
   def application do
     [mod: {Discuss, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
+                    :ecto_sql,
                     :phoenix_ecto, :postgrex]]
   end
 

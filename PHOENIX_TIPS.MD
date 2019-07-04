@@ -537,6 +537,20 @@ iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
   title: "JS frameworks"
 }
 ```
+####[error] an exception was raised logging %DBConnection.LogEntry
+Сейчас при выполнении появляется ошибка `[error] an exception was raised logging %DBConnection.LogEntry`.
+Предположительно это связано с тем, что в приложении не запускается необходимый процесс `ecto_sql`.
+Что бы исправить, нужно прописать `ecto_sql` в `mix.exs`:
+```
+  def application do
+    [mod: {Discuss, []},
+     applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext, 
+     :ecto_sql,
+     :phoenix_ecto, :postgrex]]
+  end
+```
+нужно добавить `:ecto_sql` в список по ключу `applications:`.\
+См. [Telemetry issue upgrading to ecto 3.0 #2793](https://github.com/elixir-ecto/ecto/issues/2793#issuecomment-436413037)
 
 
 
