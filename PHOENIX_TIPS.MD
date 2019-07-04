@@ -503,6 +503,15 @@ Discuss.Router.Helpers
 iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
 "/topics/new"
 ```
+#078
+##Repo
+Для вставки записи в таблицу БД используется функция `Repo.insert/1` принимающая в к-ве аргумента
+структуру("changeset") сгененрированную с помощью `Topic.changeset`. Т.о. минимально, 
+функция контроллера `Discuss.TopicController.create` должна содержать:
+```
+	changeset = Topic.changeset(%Topic{}, topic)
+	Repo.insert(changeset)
+```
 
 
 

@@ -9,9 +9,9 @@ defmodule Discuss.TopicController do
     render conn, "new.html", changeset: changeset
   end
 
-  def create(conn, %{"topic" => topic} = params) do
-    IO.puts("create form data")
-    IO.inspect(params)
-    IO.inspect(topic)
+  def create(conn, %{"topic" => topic}) do
+    changeset = Topic.changeset(%Topic{}, topic)
+
+    Repo.insert(changeset)
   end
 end
