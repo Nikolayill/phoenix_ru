@@ -401,7 +401,7 @@ iex(15)> Ecto.Changeset.cast(%Discuss.Topic{title: ""}, %{"title" => ""}, [:titl
     render conn, "new.html"
   end
 ```
-Теперь можно попробовать запустить сервер `mix phoenix.start`
+Теперь можно попробовать запустить сервер `mix phoenix.server`
 и открыть `http://localhost:4000/topics/new` - 
 на экране должен появиться текст который был внесен в шаблон.
 
