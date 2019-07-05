@@ -571,5 +571,49 @@ iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
 Например, что бы сделать сообщение об шибке красным, можно прописать 
 стиль для соответсвующего класса в `app.css`.
 
+#081-082
+##Ecto.Repo all
+При успешной отправке формы, нужно отобразить список всех тем. 
+Что бы реализовать данную функциональность, нужно использовать функцию
+`all/2` которая вытаскивает все записи удовлетворяющие запросу (см.[hexdocs.pm all/2](https://hexdocs.pm/ecto/Ecto.Repo.html#c:all/2)).\
+Пример:
+```
+# Fetch all post titles
+query = from p in Post,
+     select: p.title
+MyRepo.all(query)
+```
+Если запустить iex, можно получить список тем передав в функцию модуль `Discuss.Topic`.
+Пример:
+```
+iex(1)> Discuss.Repo.all(Discuss.Topic)
+[debug] QUERY OK source="topics" db=0.0ms
+SELECT t0."id", t0."title" FROM "topics" AS t0 []
+[
+  %Discuss.Topic{
+    __meta__: #Ecto.Schema.Metadata<:loaded, "topics">,
+    id: 1,
+    title: "JS frameworks"
+  },
+  %Discuss.Topic{
+    __meta__: #Ecto.Schema.Metadata<:loaded, "topics">,
+    id: 3,
+    title: "Java EE6"
+  },
+  %Discuss.Topic{
+    __meta__: #Ecto.Schema.Metadata<:loaded, "topics">,
+    id: 4,
+    title: "C++"
+  }
+]
+``` 
+Выполнение `Discuss.Repo.all(Discuss.Topic)` указывает Ecto, 
+найти в БД сущность соответствующую модели 
+и получить весь список записей.  
+
+Вызов этой функции, нужно добавить в функцию `index` контроллера.
+В контроллере уже присутствуют необходимый алиасы, т.о. запись будет
+более компактной: `topics = Repo.all(Topic)`
+
 
 

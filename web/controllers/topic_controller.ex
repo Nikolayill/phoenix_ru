@@ -5,6 +5,8 @@ defmodule Discuss.TopicController do
 
   def index(conn, _params) do
     IO.puts("TopicController.index")
+    topics = Repo.all(Topic)
+    IO.inspect(topics)
     render conn, "index.html"
   end
 
