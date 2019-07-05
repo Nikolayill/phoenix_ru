@@ -638,4 +638,25 @@ render conn, "index.html", topics: topics
 ```
 
 
+#084
+##Редирект из формы
+При успешном создании новой темы, пользователь должен увидеть список тем.
+Так же можно отобразить сообщение о том, что новая тема создана.
+Для реализации нужно модифицировать код контроллера:
+```
+    case Repo.insert(changeset) do
+      {:ok, post} ->
+        conn
+        |> put_flash(:info, "Topic Created")
+        |> redirect(to: topic_path(conn, :index))
+    ...
+```
+Для редиректа используется функция `redirect`, 
+выполняющая перенаправление по указанному в `to:` URL 
+(см.[redirect](https://hexdocs.pm/phoenix/Phoenix.Controller.html#redirect/2)).
+Так же используется хелпер `put_flash/3` добавляющий к ответу текст
+для отображения во всплывающей подсказке (см.[put_flash](https://hexdocs.pm/phoenix/Phoenix.Controller.html#put_flash/3))
+Отображение подсказки "зашито" в макете `web/templates/layout/app.html.eex:26`,
+где для получения значения используется функция `get_flash`.
+
 
