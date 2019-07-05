@@ -3,6 +3,11 @@ defmodule Discuss.TopicController do
 
   alias Discuss.Topic
 
+  def index(conn, _params) do
+    IO.puts("TopicController.index")
+    render conn, "index.html"
+  end
+
   def new(conn, _params) do
     changeset = Topic.changeset(%Topic{}, %{})
 
