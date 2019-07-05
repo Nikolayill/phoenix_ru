@@ -7,7 +7,7 @@ defmodule Discuss.TopicController do
     IO.puts("TopicController.index")
     topics = Repo.all(Topic)
     IO.inspect(topics)
-    render conn, "index.html"
+    render conn, "index.html", topics: topics
   end
 
   def new(conn, _params) do
