@@ -833,6 +833,13 @@ config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
   client_secret: " *** Client Secret *** "
 ```
 
+# 097
+## OAuth callback
+Из алгоритма OAuth видно, что в приложении должен быть контроллер который обрабатывает "Authorization callback URL".
+Нужно создать `Discuss.AuthController` с функцией `callback` 
+и подключенной, через механизм `plug` (см.[Plug](https://hexdocs.pm/phoenix/plug.html)) библиотекой `ueberauth`. 
+ 
+
 
    
 
