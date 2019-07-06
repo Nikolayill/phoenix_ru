@@ -58,4 +58,16 @@ config :logger, level: :info
 
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
+
+# В данном учебном проекте prod.secret.exs имеет подобную структуру ():
+#config :discuss, Discuss.Endpoint,
+#       secret_key_base: " *** "
+#
+# config :discuss, Discuss.Repo,
+#       adapter: Ecto.Adapters.Postgres,
+#       username: " *** ",
+#       password: " *** ",
+#       database: " *** ",
+#       pool_size: 20
+
 import_config "prod.secret.exs"

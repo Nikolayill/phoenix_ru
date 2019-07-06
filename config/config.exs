@@ -33,6 +33,10 @@ config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
   client_id: "",  # FIXME здесь должен быть Client ID сгенерированный GitHub
   client_secret: ""  # FIXME здесь должен быть Client Secret сгенерированный GitHub
 
+# В этом конфиге продублирована и "перекрыта" секция с данными GitHub,
+# что бы они не попадали в публичный доступ.
+import_config "ueberauth.secret.exs"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
