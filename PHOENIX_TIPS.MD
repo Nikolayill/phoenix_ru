@@ -837,7 +837,47 @@ config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
 ## OAuth callback
 Из алгоритма OAuth видно, что в приложении должен быть контроллер который обрабатывает "Authorization callback URL".
 Нужно создать `Discuss.AuthController` с функцией `callback` 
-и подключенной, через механизм `plug` (см.[Plug](https://hexdocs.pm/phoenix/plug.html)) библиотекой `ueberauth`. 
+и подключенной, через механизм `plug` (см.[Plug](https://hexdocs.pm/phoenix/plug.html)) библиотекой `ueberauth`.
+
+Так же нужно добавить новый путь в роутер.
+
+####scope "/auth"
+В роутере, `scope` это макрос определяющий префикс (скоуп) для всех URL указанных внутри блока.
+Пример:
+```
+  scope "/hello", Project do
+    pipe_through :browser
+
+    get "/world", HelloController, :index
+  end
+```
+определяет, что GET запрос на `/hello/world` будет обработан функцией `index` в `HelloController`.
+См.[scope](https://hexdocs.pm/phoenix/Phoenix.Router.html#scope/2)
+
+####pipe_through
+Так же в примере выше можно обратить внимание на `pipe_through` - этот макрос определяет пайплайн
+Через который будет пропущены данные запроса до его обработки контроллером.
+Сам пайплайн (последовательность plug-ов) определен в роутере макросом `pipeline`.
+См. [pipe_through](https://hexdocs.pm/phoenix/Phoenix.Router.html#pipe_through/1), [pipeline](https://hexdocs.pm/phoenix/Phoenix.Router.html#pipeline/2)
+
+####AuthController.request
+Что бы запустить процесс аутентификации пользователь должен его инициировать запросом на специальный URL.
+Эту функциональность предоставляет plug-ueberauth встраиваемый в контроллер в виде функции `request`.
+Роутер должен передавать обработку GET `/auth/github` в эту функцию.\
+В роутере не нужно указывать название конкретного провайдера ("github"), его можно
+передавать в виде параметра, что бы проще было добавить ещё провайдера аутентификации, если потребуется.
+В роутер нужно добавить следующий код:
+```
+  scope "/auth", Discuss do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :request
+  end
+```
+Так же в роутер нужно добавить путь к коллбэку: `get "/:provider/callback", AuthController, :callback`.
+Таким образом последовательность будет такой - пользователь выполняет запрос GET `/auth/github`, 
+затем ueberauth выполняет запрос на github, и github делает редирект на `/auth/github/callback`.
+
  
 
 
