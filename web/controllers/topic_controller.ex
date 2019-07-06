@@ -4,15 +4,12 @@ defmodule Discuss.TopicController do
   alias Discuss.Topic
 
   def index(conn, _params) do
-    IO.puts("TopicController.index")
     topics = Repo.all(Topic)
-    IO.inspect(topics)
     render conn, "index.html", topics: topics
   end
 
   def new(conn, _params) do
     changeset = Topic.changeset(%Topic{}, %{})
-
     render conn, "new.html", changeset: changeset
   end
 
@@ -29,8 +26,9 @@ defmodule Discuss.TopicController do
     end
   end
 
-  def edit(conn, %{"id" => topic_id} = params) do
-    IO.puts "edit"
-    IO.inspect(params)
+  def edit(conn, %{"id" => topic_id}) do
+    topic = Repo.get(Topic, topic_id)
+    changeset = Topic.changeset(topic)
+    render conn, "edit.html", changeset: changeset, topic: topic
   end
 end
