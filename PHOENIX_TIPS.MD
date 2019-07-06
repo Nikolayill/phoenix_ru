@@ -809,6 +809,30 @@ _на данном шаге еще не реализовано!_
 и стратегию аутентификации `ueberauth_github` соответствующую конкретному источнику.\
 Так же нужно и добавить в `mix.exs` в конфиг приложения `application`.
 
+# 096
+## Регистрация на GitHub, настрокйка config.exs
+Что бы GitHub предоставил сервис OAuth, нужно создать там свой аккаунт и зарегистрировать приложение.
+Для этого в меню профиля нужно пройти в "Settings" - "Developer settings" - "OAuth Apps" и заполнить форму.
+Важно, что бы в поле "Authorization callback URL" был специфичный для приложения URL.
+Для данного приложения в это поле нужно ввести `http://localhost:4000/auth/github/callback`.
+Другие поля формы имеют информационный характер.
+После регистрации отобразится страница с "Client ID" и "Client Secret", 
+которые будут нужны для настройки приложения.
+
+В файл `config/config.exs` нужно добавить настройки провайдера аутентификации:
+```
+config :ueberauth, Ueberauth,
+  providers: [
+    github: { Ueberauth.Strategy.Github, []}
+  ]
+```
+и данные полученные при регистрации:
+```
+config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
+  client_id: " *** Client ID *** ",
+  client_secret: " *** Client Secret *** "
+```
+
 
    
 
