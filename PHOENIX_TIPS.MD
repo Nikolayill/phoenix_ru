@@ -898,7 +898,43 @@ config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
 приложения прошедшие аутентификацию через github. 
 Нужно найти имя под которым зарегистрировано данное и нажать "revoke".
 
- 
+# 099
+## Миграция таблицы для регистрации пользователя приложения.
+Данные полученные от провайдера OAuth нужно сохранить в БД.\
+Для этого нужно сгенерировать новый файл миграции: `mix ecto.gen.migration add_users`.\
+Будет создан файл `priv/repo/migrations/20190707184623_add_users.exs`.\
+В файле нужно заполнить название и поля новой таблицы:
+```
+  def change do
+    create table(:users) do
+      add :email, :string
+      add :provider, :string
+      add :token, :string
+
+      timestamps()
+    end
+  end
+```
+здесь, поле "email" будет хранить адрес почты пользователя, "provider" - название провайдера аутентификации и
+"token" - токен, предоставленный провайдером при успешной аутентификации.
+Функция `timestamps()` добавит поля хранящие таймстамп создания записи и таймстамп обновления.
+Далее нужно выполнить миграцию: `mix ecto.migrate`.\
+Таблица будет создана и будет иметь следующую структуру (postgres):
+```SQL
+create table users
+(
+	id bigserial not null
+		constraint users_pkey
+			primary key,
+	email varchar(255),
+	provider varchar(255),
+	token varchar(255),
+	inserted_at timestamp(0) not null,
+	updated_at timestamp(0) not null
+)
+;
+```
+
 
 
    
