@@ -25,7 +25,7 @@ config :logger, :console,
 # Конфигурация Ueberauth
 config :ueberauth, Ueberauth,
   providers: [
-    github: { Ueberauth.Strategy.Github, []}
+    github: { Ueberauth.Strategy.Github, [default_scope: "user,user:email,public_repo"]}
   ]
 
 # Настройки Github OAuth apps

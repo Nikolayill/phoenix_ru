@@ -841,7 +841,7 @@ config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
 
 Так же нужно добавить новый путь в роутер.
 
-####scope "/auth"
+#### scope "/auth"
 В роутере, `scope` это макрос определяющий префикс (скоуп) для всех URL указанных внутри блока.
 Пример:
 ```
@@ -854,13 +854,13 @@ config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
 определяет, что GET запрос на `/hello/world` будет обработан функцией `index` в `HelloController`.
 См.[scope](https://hexdocs.pm/phoenix/Phoenix.Router.html#scope/2)
 
-####pipe_through
+#### pipe_through
 Так же в примере выше можно обратить внимание на `pipe_through` - этот макрос определяет пайплайн
 Через который будет пропущены данные запроса до его обработки контроллером.
 Сам пайплайн (последовательность plug-ов) определен в роутере макросом `pipeline`.
 См. [pipe_through](https://hexdocs.pm/phoenix/Phoenix.Router.html#pipe_through/1), [pipeline](https://hexdocs.pm/phoenix/Phoenix.Router.html#pipeline/2)
 
-####AuthController.request
+#### AuthController.request
 Что бы запустить процесс аутентификации пользователь должен его инициировать запросом на специальный URL.
 Эту функциональность предоставляет plug-ueberauth встраиваемый в контроллер в виде функции `request`.
 Роутер должен передавать обработку GET `/auth/github` в эту функцию.\
@@ -877,6 +877,26 @@ config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
 Так же в роутер нужно добавить путь к коллбэку: `get "/:provider/callback", AuthController, :callback`.
 Таким образом последовательность будет такой - пользователь выполняет запрос GET `/auth/github`, 
 затем ueberauth выполняет запрос на github, и github делает редирект на `/auth/github/callback`.
+
+# 098
+## Bug "Unable to access the user's email address"
+Баг происходит в процессе аутентификации, если у пользователя не настроен публичный email.
+Что бы это исправить, можно явно указать, что приложению требуется доступ к почте пользователя.
+Это делается в `config/config.exs` параметром стратегии "default_scope":
+`github: { Ueberauth.Strategy.Github, [default_scope: "user,user:email,public_repo"]}`
+
+Теперь при переходе по [http://localhost:4000/auth/github/](http://localhost:4000/auth/github/)\
+пользователь будет перенаправлен на github, к форме авторизации. 
+После подтверждения произойдет редирект в приложение (но т.к. функциональность реализована не доконца, 
+появится страница ошибки).\
+В консоли можно увидеть залоггированные данные полученные функцией `callback`.
+
+#### Сброс аутентификации
+Если попытаться пройти аутентификацию повторно, то она будет проходить моментально, минуя форму на гитхабе.
+Что бы воспроизвести все шаги процесса, можно отозвать доступ приложения из профиля github:
+нужно перейти в "Personal settings" - "Applications" - "Authorized OAuth Apps". На вкладке перечислены все 
+приложения прошедшие аутентификацию через github. 
+Нужно найти имя под которым зарегистрировано данное и нажать "revoke".
 
  
 
