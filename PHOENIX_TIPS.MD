@@ -20,14 +20,14 @@ https://stackoverflow.com/a/53057831
 https://stackoverflow.com/questions/53045717/adapter-ecto-adapters-postgres-was-not-compiled
 
 В `\discuss\mix.exs` были проапгрейжены зависимости:
-```
+```Elixir
 	 {:ecto_sql, "~> 3.0"},
      {:phoenix_ecto, "~> 4.0"},
      {:postgrex, ">= 0.0.0"},
 ```
 
 В `\discuss\lib\discuss\repo.ex` был добавлен параметр `adapter`:
-```
+```Elixir
 defmodule Discuss.Repo do
   use Ecto.Repo, 
 	otp_app: :discuss,
@@ -70,7 +70,7 @@ mix do deps.get, compile
 В консоль сервер выдает ошибку ` ** (Phoenix.Router.NoRouteError) no route found for GET /vendor/material....`.
 
 Решение "в меру непонимания проблемы" в файле `\discuss\lib\discuss\endpoint.ex`: добавил `vendor` в код:
-```
+```Elixir
 plug Plug.Static,
 	at: "/", from: :discuss, gzip: false,
 	only: ~w(css fonts images js vendor favicon.ico robots.txt)
@@ -113,7 +113,7 @@ CSS из папки vendor начали раздаваться...
 о том, что был сгененрирован скрипт `20190612224957_add_topics` по указанному пути.
 
 В скрипте будет расположена пустая функция `change`, что бы создать таблицу в нее нужно добавить код:
-```
+```Elixir
   def change do
     create table(:topics) do
       add :title, :string
@@ -146,7 +146,7 @@ CSS из папки vendor начали раздаваться...
 которую он обслуживает. Т.е. `topics` - `TopicController`.
 В контроллере должна быть функция-обработчик `new` указанная в роутере (на пред. шаге).
 Т.о. модуль будет выглядеть так:
-```
+```Elixir
 defmodule Discuss.TopicController do
   def new() do
 
@@ -172,14 +172,14 @@ Request: GET /topics/new
 
 Например:
 существует модуль `Math`
-```
+```Elixir
 defmodule Math do
   def add(a,b), do: a+b
 end
 ```
 что бы в модуле `TopicController` использовать функцию `add`,
 можно обратиться к ней через полное имя модуля:
-```
+```Elixir
 defmodule TopicController do
   def new() do
 	Math.add(1,2)
@@ -189,7 +189,7 @@ end
  
 если в модуле `TopicController` написать `import Math`, 
 функция `add` станет доступна извне как `TopicController.add`:
-```
+```Elixir
 defmodule TopicController do
   import Math
   
@@ -201,7 +201,7 @@ end
 
 если в модуле `TopicController` написать `alias Math`, 
 функция `add` будет доступна только в самом `TopicController`:
-```
+```Elixir
 defmodule TopicController do
   alias Math
   
@@ -220,7 +220,7 @@ end
 в модуле `Discuss.Web`.
 
 Модуль `Discuss.Web` (см.`web/web.ex`) содержит такой код:
-```
+```Elixir
   def controller do
     quote do
       use Phoenix.Controller
@@ -243,7 +243,7 @@ end
  
 Например, новая функциональность помещена в модуль `Discuss.CustomHelpers`, тогда
 что бы подключить её к каждому контроллеру нужно модифицировать код так:
-```
+```Elixir
   def controller do
     quote do
       use Phoenix.Controller
@@ -305,7 +305,7 @@ Request: GET /topics/new
 Как упоминалось выше (см. "067") в модуль нужно добавить некоторые общие функции: `use Discuss.Web, :model`.
 
 Модель должна содержать схему данных, которую будет использовать феникс.
-```
+```Elixir
   schema "topics" do
     field :title, :string
   end
@@ -344,7 +344,7 @@ iex(9)> Ecto.Changeset.cast(%Discuss.Topic{title: "Test"}, %{"title" => "New tit
 #### Функции-валидаторы (Ecto.Changeset.validate_required)
 В `Ecto` существует набор предопределенных функций варидации. Для валидации `Discuss.Topic` 
 в модуль нужно добавить функцию формирующую changeset и применяющую к нему валидатор:
-```
+```Elixir
   def changeset(struct, params \\ %{}) do
     struct
     |> cast(params, [:title])
@@ -394,7 +394,7 @@ iex(15)> Ecto.Changeset.cast(%Discuss.Topic{title: ""}, %{"title" => ""}, [:titl
 Сейчас в шаблоне можно указать тестовый код `<h1>New Test Form</h1>`, 
 что бы предварительно проверить будет ли он рендериться.
 В контроллере `TopicController`, функцию `new` нужно дополнить командой рендеринга шаблона:
-```
+```Elixir
   def new(conn, params) do
     changeset = Topic.changeset(%Topic{}, %{})
     
@@ -421,7 +421,7 @@ iex(15)> Ecto.Changeset.cast(%Discuss.Topic{title: ""}, %{"title" => ""}, [:titl
  к ним можно обратиться по имени начинающемся с символа `@`.\
 Контекст - это ассоциативный массив который передается третьим 
 параметром функции `render` в контроллере:
-```
+```Elixir
 render conn, "new.html", changeset: changeset
 ```
 Шаблон обращается к значениям по их ключам `@changeset`.\
@@ -455,13 +455,13 @@ The following topic_path actions are defined under your router:
 Но при нажатии кнопки мы будем получать ошибку, т.к. сам обработчик в контроллере не определен.
 
 Если определить в контроллере функцию `create`:
-```
+```Elixir
   def create(conn, params) do
     IO.inspect(params)
   end
 ```
 И попытаться отправить заполненную форму, в консоль будет выведено значение в `params`:
-```
+```Elixir
 %{
   "_csrf_token" => "CDELFDhzXCEGWwF5OgJoFAgTCScFAAAAFFbyz43dV8gKRlQLqYMwgw==",
   "_utf8" => "тЬУ",
@@ -477,7 +477,7 @@ The following topic_path actions are defined under your router:
 `%{"topic" => topic} = params`\
 тогда в переменную `topic` попадет значение по ключу `"topic"`, т.е. `%{"title" => "gfdgd"}`.\
 Выражения паттерн матчинга может использоваться непосредственно вместо аргументов функции:
-```
+```Elixir
   def create(conn, %{"topic" => topic} = params) do
 ```
 здесь `%{"topic" => topic} = params` означает - сопоставить второй аргумент с образцом и поместить
@@ -508,13 +508,13 @@ iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
 Для вставки записи в таблицу БД используется функция `Repo.insert/1` принимающая в к-ве аргумента
 структуру("changeset") сгененрированную с помощью `Topic.changeset`. Т.о. минимально, 
 функция контроллера `Discuss.TopicController.create` должна содержать:
-```
+```Elixir
 	changeset = Topic.changeset(%Topic{}, topic)
 	Repo.insert(changeset)
 ```
 Так же следует добавить проверку результата. `Repo.insert` - функция возвращает кортеж первый элемент
 которого атом `ok:` в случае успешного выполнения и `error:` в случае ошибки.
-```
+```Elixir
     case Repo.insert(changeset) do
       {:ok, post} -> IO.inspect(post)
       {:error, changeset} -> IO.inspect(changeset) #обработка ошибки
@@ -530,7 +530,7 @@ iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
   Parameters: %{"_csrf_token" => "JTwjUDcVPhI0WmpaFj42ERIxBgEHAAAAdDbaOpQfL/9nyNPdfpjvbA==", "_utf8" => "тЬУ", "topic" => %{"title" => "gfdgd"}}
 ```
 затем сформированный SQL запрос и значение структуры:
-```
+```Elixir
 %Discuss.Topic{
   __meta__: #Ecto.Schema.Metadata<:loaded, "topics">,
   id: 1,
@@ -541,7 +541,7 @@ iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
 Сейчас при выполнении появляется ошибка `[error] an exception was raised logging %DBConnection.LogEntry`.
 Предположительно это связано с тем, что в приложении не запускается необходимый процесс `ecto_sql`.
 Что бы исправить, нужно прописать `ecto_sql` в `mix.exs`:
-```
+```Elixir
   def application do
     [mod: {Discuss, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext, 
@@ -555,12 +555,12 @@ iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
 # 079
 ## Обработка ошибки валидации
 В ветке обрабатывающей ошибку валидации нужно добавить отображение формы и текста ошибки:
-```
+```Elixir
   {:error, changeset} ->
     render conn, "new.html", changeset: changeset
 ```
 Что бы пользователь видел ошибку, в шаблон формы нужно добавить специальный тег:
-```
+```Elixir
 	<%= error_tag f, :title %>
 ```
 он отображает ошибку валидации поля `title`
@@ -577,7 +577,7 @@ iex(2)> Routes.topic_path(%Plug.Conn{}, :new)
 Что бы реализовать данную функциональность, нужно использовать функцию
 `all/2` которая вытаскивает все записи удовлетворяющие запросу (см.[hexdocs.pm all/2](https://hexdocs.pm/ecto/Ecto.Repo.html#c:all/2)).\
 Пример:
-```
+```Elixir
 # Fetch all post titles
 query = from p in Post,
      select: p.title
@@ -620,7 +620,7 @@ SELECT t0."id", t0."title" FROM "topics" AS t0 []
 Что бы отобразить страницу со списком полученным на предидущем шаге,
 нужно использовать отдельный шаблон `web/templates/topic/index.html.eex`.
 В нём для генерации тега списка можно использовать синтаксис for-генератора:
-```
+```Elixir
 	<%= for topic <- @topics do %>
 		<li class="collection-item">
 			<%= topic.title %>
@@ -633,7 +633,7 @@ SELECT t0."id", t0."title" FROM "topics" AS t0 []
 формироваться отдельный тег `<li>`. 
 
 В контроллер нужно добавить вызов функции `render`:
-```
+```Elixir
 render conn, "index.html", topics: topics
 ```
 
@@ -643,7 +643,7 @@ render conn, "index.html", topics: topics
 При успешном создании новой темы, пользователь должен увидеть список тем.
 Так же можно отобразить сообщение о том, что новая тема создана.
 Для реализации нужно модифицировать код контроллера:
-```
+```Elixir
     case Repo.insert(changeset) do
       {:ok, post} ->
         conn
@@ -702,7 +702,7 @@ render conn, "index.html", topics: topics
 Затем выполняется рендер шаблона, в качестве параметра в шаблон передается ченьжсет и исходная запись.\
 Новый шаблон с формой будет расположен в `web/templates/topic/edit.html.eex`.
 Форма в шаблоне будет похожа на форму создания темы:
-```
+```Elixir
 <%= form_for @changeset, topic_path(@conn, :update, @topic), fn f -> %>
 ```
 Здесь стоит обратить внимние на применение хелпера: `topic_path(@conn, :update, @topic)`
@@ -751,7 +751,7 @@ _на данном шаге еще не реализовано!_
 ## resources
 Сейчас приложение следует RESTfull-соглашениям, это реализовано в роутере - типами HTTP запросов
 и соответсвующими URL. Для реализации всей функциональности требуется 6 записей:
-```
+```Elixir
     get "/", TopicController, :index
     get "/topics/new", TopicController, :new
     post "/topics", TopicController, :create
@@ -762,7 +762,7 @@ _на данном шаге еще не реализовано!_
 В фенкисе есть хелпер позволяющий упростить этот код до отдной строки, при условии
 следования соглашениям о запросах и именовании функций контроллера.
 Т.о. можно заменить эти строки на:
-```
+```Elixir
     resources "/topics", TopicController
 ```
 Этот хелпер даст ту же функциональность, за исключением доступа через "/", т.к.
@@ -784,7 +784,7 @@ _на данном шаге еще не реализовано!_
 ## Кнопка "Delete"
 Что бы пользователю было доступно удаление темы, нужно для каждого элемента списка сгенерировать кнопку.
 Для этого в шаблон нужно доабвить код:
-```
+```Elixir
 <%= link "Delete", to: topic_path(@conn, :delete, topic), method: :delete %>
 ```
 он напоминает код кнопки "Edit", но в него добавлено указание HTTP метода "Delete": `method: :delete`.
@@ -820,14 +820,14 @@ _на данном шаге еще не реализовано!_
 которые будут нужны для настройки приложения.
 
 В файл `config/config.exs` нужно добавить настройки провайдера аутентификации:
-```
+```Elixir
 config :ueberauth, Ueberauth,
   providers: [
     github: { Ueberauth.Strategy.Github, []}
   ]
 ```
 и данные полученные при регистрации:
-```
+```Elixir
 config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
   client_id: " *** Client ID *** ",
   client_secret: " *** Client Secret *** "
@@ -844,7 +844,7 @@ config :ueberauth,  Ueberauth.Strategy.Github.OAuth,
 #### scope "/auth"
 В роутере, `scope` это макрос определяющий префикс (скоуп) для всех URL указанных внутри блока.
 Пример:
-```
+```Elixir
   scope "/hello", Project do
     pipe_through :browser
 
