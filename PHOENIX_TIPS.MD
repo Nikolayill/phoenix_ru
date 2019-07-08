@@ -1,3 +1,6 @@
+# Предварительные шаги
+См. в [README.md](README.md)
+
 # 052-055
 Что бы создать новый проект, выполнил:
 `mix phoenix.new discuss`
@@ -997,6 +1000,16 @@ create table users
 затем выполняется редирект на главную страницую.\
 Запись в cookies выполняется через функцию работы с сессией `put_session(:user_id, user.id)`.
 **Сессионные данные будут зашифрованы, это послужит защитой от фальсификации идентификатора "user_id"**
+
+# Vagrant
+В репозиторий добавлен Vagrantfile с PostgreSql. 
+При работе с проектом использовалась старая версия Vagrant 1.9.1 (windows + VirtualBox 4.3.20), 
+которой требовался "патч" в 10 строке Vagrantfile:
+```
+#patch for my outdated version of vagrant
+Vagrant::DEFAULT_SERVER_URL.replace('https://vagrantcloud.com')
+```
+Для работы с актуальной версией, убрать или закомментировать.
 
 
 
