@@ -1071,6 +1071,28 @@ Plug "SetUser" будет сохранять данные пользовател
 	assign(conn, :user, user) 
 ```
 
+# 107 
+## pipeline
+Что бы включить plug в цикл обработки запроса, нужно добавить его в тело макроса `pipeline` в роутере:
+```Elixir 
+  pipeline :browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_flash
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+    plug Discuss.Plugs.SetUser
+  end
+```
+в макросе уже есть некоторые plug-и добавленные автоматически при генерации проекта - это функции, 
+они определены как атомы, например: `plug :accepts, ["html"]`.\
+Подключение Plug-модуля выглядит иначе - нужно указать полное имя модуля `plug Discuss.Plugs.SetUser`. 
+
+Когда происходит обработка запроса, plug-и применяются в последовательности, в которой они указаны в пайплайне.
+
+Теперь, если добавить в контроллер `IO.inspect(conn.assigns)` можно увидеть, что при запросе страницы
+отображается запись содержащая значение `%Discuss.User`.
+
 
 
 
