@@ -1185,7 +1185,37 @@ create table topics
 ;
 ```
 
+# 114   
+## Связка (отношения) моделей
+Что бы феникс получил доступ к изменениям в БД, 
+нужно модифицировать соответсвующие модели.
+В схему `web/models/user.ex` нужно добавить строку:
+```Elixir
+    has_many :topics, Discuss.Topic
+```
+где указан тип отношения (один-ко многим), имя поля и модуль в котором описана связываемая модель.
+В схеме `web/models/topic.ex` нужно добавить:
+```Elixir
+    belongs_to :user, Discuss.User
+```
+здесь аналогично указывается тип отношения (принадлежность), поле и модель.
 
+Теперь можно проверить код в IEX:
+```cmd 
+iex -S mix
+iex(1)> Discuss.Repo.get(Discuss.User, 1)
+```
+Команда вернет структуру:
+```Elixir 
+%Discuss.User{
+  id: 1,	
+  topics: #Ecto.Association.NotLoaded<association :topics is not loaded>,
+  # ...
+}
+```
+но в поле `topics` будет значение `#Ecto.Association.NotLoaded<association :topics is not loaded>`
+т.к. по умолчанию феникс не подгружает связи.
+Нужно заметить, что в БД на данный момент будут отсутсвовать связи темы и пользователя.
 
 
 
