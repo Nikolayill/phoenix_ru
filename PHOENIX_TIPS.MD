@@ -1288,3 +1288,42 @@ iex(1)> Discuss.Repo.get(Discuss.User, 1)
 <%= if @conn.assigns.user && @conn.assigns.user.id == topic.user_id do %>
 ```
 
+# 120
+## Добавление миграции для хранения комментариев
+Для хранения комментариев нужна таблица БД. Нужно создать новый файл миграции:
+```
+mix ecto.gen.migration add_comments
+```
+Запись должна содержать:
+
+поле | функция миграции
+----:|------ 
+комментарий | `add :content, :string`
+таймстамп | `timestamps()`
+идентфикатор пользователя оставившего комментарий | `add :user_id, references(:users)`
+связь с конкретной темой | `add :topic_id, references(:topics)`
+
+Сформировав код миграции, можно её выполнить:
+```
+mix ecto.migrate
+```
+
+В БД появится таблица:
+```SQL
+create table comments
+(
+	id bigserial not null
+		constraint comments_pkey
+			primary key,
+	content varchar(255),
+	user_id bigint
+		constraint comments_user_id_fkey
+			references users,
+	topic_id bigint
+		constraint comments_topic_id_fkey
+			references topics,
+	inserted_at timestamp(0) not null,
+	updated_at timestamp(0) not null
+)
+;
+```
