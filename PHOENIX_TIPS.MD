@@ -1371,14 +1371,14 @@ create table comments
 Функция join вполняется при подключении клиента к каналу, в ней выполняется авторизация клиента. Функция handle_in
 это обработчик сообщения.\
 В клиентской части приложения [socket.js](web/static/js/socket.js) так же определена функция join:
-```
+```JavaScript
 channel.join()
   .receive("ok", resp => { console.log("Joined successfully", resp) })
   .receive("error", resp => { console.log("Unable to join", resp) })
 ```
 здесь она инициирует подключение к каналу, а "receive" устанавливает коллбэки на ответ сервера.\
 И для обработки сообщений на клиенте используется коллбэк:
-```
+```JavaScript
 channel.on("new_msg", payload => {
 	console.log(payload);
 });
@@ -1398,6 +1398,34 @@ channel.on("new_msg", payload => {
 ## Реализация Discuss.CommentsChannel
 Для канала нужно создать отдельный модуль [CommentsChannel](web/channels/comments_channel.ex). 
 Затем добавить его в user_socket.ex: `channel "comments:*", Discuss.CommentsChannel`.
-Такое определение для роутера выглядело бы примерно похожим на `get "/comments/:id", CommentsController, :handle_in`. 
+Такое определение для роутера выглядело бы примерно похожим на `get "/comments/:id", CommentsController, :handle_in`.
+
+# 125 
+## Тестовый запуск канала
+Что бы протестировать канал, нужно дополнить заготовку кода в CommentsChannel.\
+Функция join - это коллбэк вызываемый при подключении клиента, она должна принимать три агрумента:
+name - название канала, params - параметры соединения (используются при аутентификации) и socket - данные конкретного сокета.
+Ожидается, что join возвращает определенную структуру, которая определяет результат аутентификации, для теста будет
+возвращаться `{:ok, %{}, socket}`.
+Подробнее см. [Joining Channels](https://hexdocs.pm/phoenix/channels.html#joining-channels).
+
+Так же нужно внести изменения в [socket.js](web/static/js/socket.js), подставив нужно имя канала:
+```JavaScript
+let channel = socket.channel("comments:1", {})
+```
+И в [web/static/js/app.js](web/static/js/app.js) раскомментировать импорт socket.js
+Теперь можно перезапустить Phoenix и проверить подключение к каналу.\
+При старте сервера в консол браузера будет выведено сообщение об успешном соединении `Joined successfully Object`.
+И в консоли Phoenix так же выдаст `[info] JOIN comments:1 to Discuss.CommentsChannel` и определенный в join
+вывод: 
+```
+Discuss.CommentsChannel join
+comments:1
+```
+
+Если поменять структуру возвращаемую join на `{:ok, %{hey: "there"}, socket}`, в будет видно, что она
+была передана клиенту: `Joined successfully {hey: "there"}`
+
+
 
  
