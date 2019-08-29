@@ -1351,3 +1351,53 @@ create table comments
     |> validate_required([:content]) # провалидировать обязательное поле
   end
 ```
+
+# 122-124
+## Каналы (Channels) Phoenix
+Каналы Phoenix это механизм на стороне сервера, предоставляющий возможность передачи сообщений в (мягком) реальном
+времени. Каналы используют модель тема(издатель)-подписчик (topic-subscriber). Обе стороны - клиент и сервер, могут
+публиковать и отслеживать сообщения в темах. Опубликованное в теме сообщение становится доступным всем подписчикам.\
+Каналы Phoenix "из коробки" поддерживают два вида транспорта: websockets и long-polling. Соответственно клиентское 
+приложение должно использовать один из [доступных протоколов](https://hexdocs.pm/phoenix/channels.html#client-libraries).\
+На стороне сервера канал представляеся отдельным процессом (имеющим состояние).
+Подробнее см. докуменатцию [Channels](https://hexdocs.pm/phoenix/channels.html) 
+
+Для работы с каналами, в структуре phoenix-проекта предусмотрена отдельная папка `web/channels` и добавленный в неё, 
+при генерации проекта, модуль [web/channels/user_socket.ex]().\
+Так же для клиентской части сгененрирован [web/static/js/socket.js]().
+При работе с каналами на сервере в основном использоваться функции `join` и `handle_id`. 
+Они определяются в модуле канала (см. channel в [user_socket.ex](web/channels/user_socket.ex)). Т.о. user_socket.ex
+для каналов, похож на router.ex для HTTP запросов.
+Функция join вполняется при подключении клиента к каналу, в ней выполняется авторизация клиента. Функция handle_in
+это обработчик сообщения.\
+В клиентской части приложения [socket.js](web/static/js/socket.js) так же определена функция join:
+```
+channel.join()
+  .receive("ok", resp => { console.log("Joined successfully", resp) })
+  .receive("error", resp => { console.log("Unable to join", resp) })
+```
+здесь она инициирует подключение к каналу, а "receive" устанавливает коллбэки на ответ сервера.\
+И для обработки сообщений на клиенте используется коллбэк:
+```
+channel.on("new_msg", payload => {
+	console.log(payload);
+});
+```
+
+## Канал для комментариев
+Перед тем как приступить к реализации можно рассмотреть сгенерированный код в [user_socket](web/channels/user_socket.ex).
+В модуле указывается способ взаимодействия, в данном случае websocket:
+`transport :websocket, Phoenix.Transports.WebSocket`
+
+Ниже определена функция connect с двумя аргументами params и socket. Аргумент socket, для канала,
+имеет схожее, со структурой conn, назначение. 
+
+В сгенерированном файле присутствует закомментированное определение канала: `# channel "room:*", Discuss.RoomChannel`
+Здесь `"room:*"` задает имя канала, а `Discuss.RoomChannel` - модуль выполняющий обрабтку сообщений в нём.
+
+## Реализация Discuss.CommentsChannel
+Для канала нужно создать отдельный модуль [CommentsChannel](web/channels/comments_channel.ex). 
+Затем добавить его в user_socket.ex: `channel "comments:*", Discuss.CommentsChannel`.
+Такое определение для роутера выглядело бы примерно похожим на `get "/comments/:id", CommentsController, :handle_in`. 
+
+ 
