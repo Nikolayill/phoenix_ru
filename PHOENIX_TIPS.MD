@@ -1296,7 +1296,7 @@ mix ecto.gen.migration add_comments
 ```
 Запись должна содержать:
 
-поле | функция миграции
+назначение | функция миграции
 ----:|------ 
 комментарий | `add :content, :string`
 таймстамп | `timestamps()`
@@ -1326,4 +1326,28 @@ create table comments
 	updated_at timestamp(0) not null
 )
 ;
+```
+
+# 121
+## Модель для комментариев
+Модель определяется в новом модуле [comments](web/models/comment.ex):
+
+ назначение | поле модели
+ ----:|------ 
+ комментарий | `field :content, :string`
+ таймстамп | `timestamps()`
+ связь с пользователем | `belongs_to :user, Discuss.User`
+ связь с конкретной темой | `belongs_to :topic, Discuss.Topic`
+ 
+через `belongs_to` указывается связь с моделью User и с Topic.
+В модели [User](web/models/user.ex) и [Topic](web/models/topic.ex) соответсвенно тоже нужно добавить связи:
+`has_many :comments, Discuss.Comment`.
+
+Далее в модели Comments нужно создать changeset-функцию:
+```Elixir
+  def changeset(struct, params \\ %{}) do
+    struct
+    |> cast(params, [:content]) # созданть заполненную Ecto.Changeset
+    |> validate_required([:content]) # провалидировать обязательное поле
+  end
 ```
