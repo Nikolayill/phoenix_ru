@@ -9,7 +9,8 @@ defmodule Discuss.CommentsChannel do
     {:ok, %{id: topic.id, title: topic.title}, socket}
   end
 
-  def handle_in(name, message, socket) do
+  def handle_in(name, %{"content" => content}, socket) do
+    IO.puts(content)
     {:reply, :ok, socket}
   end
 end
