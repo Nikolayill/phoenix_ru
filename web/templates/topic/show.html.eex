@@ -4,7 +4,8 @@
 	<textarea class="materialize-textarea"></textarea>
 	<button class="btn">Add comment</button>
 </div>
-
+<ul class="collection">
+</ul>
 
 <script>
 	document.addEventListener("DOMContentLoaded", function(){
